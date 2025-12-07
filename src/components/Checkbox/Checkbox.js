@@ -11,16 +11,17 @@ const Checkbox = (props) => {
         {({ field }) => {
           return options.map((option, index) => {
             return (
-              <React.Fragment  key={index}>
+              <React.Fragment key={index}>
                 <CheckboxMain
-          
                   // type="checkbox"
                   id={option.value}
                   {...field}
                   value={option.value}
                   checked={field.value.includes(option.value)}
-                />
-                <div htmlFor={name}>{option.key}</div>
+                >
+                  {option.key}
+                </CheckboxMain>
+                {/* <div htmlFor={name}>{option.key}</div> */}
               </React.Fragment>
             );
           });

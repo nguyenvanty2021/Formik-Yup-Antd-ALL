@@ -6,15 +6,23 @@ import Select from "../Select/Select";
 import Textarea from "../Textarea/Textarea";
 
 const FormikControl = (props) => {
-  const { control, field, form, ...rest } = props;
+  const { control, field, form, isPassword, onClear, ...rest } = props;
 
   switch (control) {
     case "input":
-      return <Input placeholder={props.placeholder} {...rest} />;
+      return (
+        <Input
+          placeholder={props.placeholder}
+          isPassword={isPassword}
+          {...rest}
+        />
+      );
     case "textarea":
       return <Textarea placeholder={props.placeholder} {...rest} />;
     case "select":
-      return <Select placeholder={props.placeholder} {...rest} />;
+      return (
+        <Select onClear={onClear} placeholder={props.placeholder} {...rest} />
+      );
     case "radio":
       return <Radio {...rest} />;
     case "checkbox":

@@ -3,8 +3,9 @@ import { ErrorMessage, FastField } from "formik";
 import TextErrors from "../TextErrors/TextErrors";
 
 const Input = (props) => {
-  const { label, name, ...rest } = props;
-  console.log(props);
+  const { label, name, isPassword, ...rest } = props;
+  // Chọn component: Input thường hoặc Input.Password
+  const FieldComponent = isPassword ? InputMain.Password : InputMain;
   return (
     <div>
       <FastField name={name}>
@@ -18,7 +19,7 @@ const Input = (props) => {
           return (
             <div>
               <div htmlFor={name}>{label}</div>
-              <InputMain
+              <FieldComponent
                 style={showError ? { border: "1px solid red" } : {}}
                 {...rest}
                 {...field}

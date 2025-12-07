@@ -3,11 +3,12 @@ import React, { useState } from "react";
 import * as Yup from "yup";
 import FormikControl from "../FormikControl/FormikControl";
 import "./index.css";
+import { regex } from "../../utils";
 const arraySelect = [
-  {
-    key: "Select city",
-    value: "",
-  },
+  // {
+  //   key: "Select city",
+  //   value: "",
+  // },
   {
     key: "Ho Chi Minh",
     value: "hcm",
@@ -41,17 +42,25 @@ const Register = () => {
   const [formValue, setFormValue] = useState({});
   const initialValues = {
     email: "",
+    url: "",
     description: "",
     select: "",
     radio: "male",
-    checkbox: "",
+    checkbox: [], // 👈 quan trọng: mảng rỗng
     age: "",
-    url: "",
+
     datePicker: null,
+    password: "",
+    rePassword: "",
   };
   const validationSchema = Yup.object({
     // nếu có 1 thuộc tính object thì phải lồng nhau tiếp 1 ({}) để check từng key bên trong nữa
-    email: Yup.string().email("Invalid email format").required("Required"),
+    email: Yup.string()
+      .matches(regex.email, "Invalid email format")
+      .required("Required"),
+    url: Yup.string()
+      .matches(regex.url, "Invalid URL format")
+      .required("Required"),
     password: Yup.string().required("Required"),
     rePassword: Yup.string()
       .oneOf([Yup.ref("password"), ""], "Password must match")
@@ -73,14 +82,32 @@ const Register = () => {
     //   otherwise: Yup.string().notRequired(),
     // }),
     description: Yup.string().required("Required"),
-    url: Yup.string().url().required("Required"),
+
+    // select: Yup.string().required("Required"),
+    // select: Yup.string().required("Required"),
+    // select: Yup.string()
+    //   .transform((value) => (value == null ? "" : value)) // null / undefined => ""
+    //   .required("Required"),
+    // select: Yup.string()
+    //   .nullable()
+    //   .transform((value) => (value == null ? "" : value))
+    //   .required("Required"),
+    // select: Yup.mixed()
+    //   .nullable() // cho phép null
+    //   .required("Required"), // null / undefined => lỗi
+    // select: Yup.mixed().test("required-select", "Required", (value) => {
+    //   return value !== null && value !== undefined && value !== "";
+    // }),
     select: Yup.string().required("Required"),
     radio: Yup.string().required("Required"),
     // array.length(length: number | Ref, message?: string | function): Schema
     // array.min(limit: number | Ref, message?: string | function): Schema
     // array.max(limit: number | Ref, message?: string | function): Schema
     // checkbox: Yup.array().length(2, "Too Length").required("Required"),
-    checkbox: Yup.array().required("Required"),
+    // checkbox: Yup.array().required("Required"),
+    checkbox: Yup.array()
+      .min(1, "Please select at least one option")
+      .required("Required"),
     // data nào khi khởi tạo = null thì mới thêm .nullable()
     datePicker: Yup.date().required("Required").nullable(),
     // datePicker: Yup.date().default(function() {
@@ -89,10 +116,14 @@ const Register = () => {
   });
   const onSubmit = (values) => {
     const dateFormat = values.datePicker;
-    setFormValue({...values, datePicker: dateFormat.format("YYYY-MM-DD, HH-mm-ss")});
+    console.log(values);
+    setFormValue({
+      ...values,
+      datePicker: dateFormat.format("YYYY-MM-DD, HH-mm-ss"),
+    });
+    alert("123");
   };
   return (
-   
     <Formik
       onSubmit={onSubmit}
       initialValues={initialValues}
@@ -103,7 +134,6 @@ const Register = () => {
         return (
           <div className="register-main">
             {" "}
-        
             <Form className="register">
               <div>
                 {" "}
@@ -134,6 +164,7 @@ const Register = () => {
                   label="Password"
                   name="password"
                   placeholder="Input password"
+                  isPassword={true}
                 />
               </div>
               <div>
@@ -154,6 +185,7 @@ const Register = () => {
                   label="Re-password"
                   name="rePassword"
                   placeholder="Input re-password"
+                  isPassword={true}
                 />
               </div>
 
@@ -170,12 +202,16 @@ const Register = () => {
               <div>
                 {" "}
                 <FormikControl
+                  onClear={() => {
+                    formik.setFieldValue("select", "");
+                    setFormValue((prev) => ({ ...prev, select: "" }));
+                  }}
                   control="select"
                   type="text"
                   label="City"
                   options={arraySelect}
                   name="select"
-                  placeholder="Choose select"
+                  placeholder="Choose select 1"
                 />
               </div>
               <div>
@@ -218,13 +254,11 @@ const Register = () => {
                 </button>
               </div>
             </Form>
-         
             <div className="data"> {JSON.stringify(formValue)}</div>
           </div>
         );
       }}
     </Formik>
-  
   );
 };
 export default Register;

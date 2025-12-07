@@ -48,7 +48,6 @@ const Register = () => {
     radio: "male",
     checkbox: [], // 👈 quan trọng: mảng rỗng
     age: "",
-
     datePicker: null,
     password: "",
     rePassword: "",
@@ -99,6 +98,13 @@ const Register = () => {
     //   return value !== null && value !== undefined && value !== "";
     // }),
     select: Yup.string().required("Required"),
+    // select: Yup.string()
+    //   .required("Required")
+    //   .test("debug-select", "Required", function (value) {
+    //     console.log("Yup debug select value =", value);
+    //     // chỉ để debug, vẫn có thể return !!value
+    //     return value !== "";
+    //   }),
     radio: Yup.string().required("Required"),
     // array.length(length: number | Ref, message?: string | function): Schema
     // array.min(limit: number | Ref, message?: string | function): Schema
@@ -131,6 +137,10 @@ const Register = () => {
     >
       {(formik) => {
         console.log(formik);
+        console.log("values.select =", formik.values.select);
+        console.log("errors.select =", formik.errors.select);
+        console.log("touched.select =", formik.touched.select);
+        console.log("-----------------------------------");
         return (
           <div className="register-main">
             {" "}
@@ -202,16 +212,12 @@ const Register = () => {
               <div>
                 {" "}
                 <FormikControl
-                  onClear={() => {
-                    formik.setFieldValue("select", "");
-                    setFormValue((prev) => ({ ...prev, select: "" }));
-                  }}
                   control="select"
                   type="text"
                   label="City"
                   options={arraySelect}
                   name="select"
-                  placeholder="Choose select 1"
+                  placeholder="Choose select"
                 />
               </div>
               <div>

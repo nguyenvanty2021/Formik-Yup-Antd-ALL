@@ -1,45 +1,46 @@
-import { FastField, ErrorMessage } from "formik";
+import { Field } from "formik";
 import { Select } from "antd";
 import TextErrors from "../TextErrors/TextErrors";
 
-const Select1 = ({ label, name, options, placeholder, onClear, ...rest }) => {
+const Select1 = ({ label, name, options, placeholder, ...rest }) => {
   return (
     <div>
       <label htmlFor={name}>{label}</label>
 
-      <FastField name={name}>
-        {({ field, form }) => (
-          <Select
-            allowClear
-            onClear={onClear}
-            // onClear={() => {
-            //   // 👇 clear = "" cho khớp initialValues + Yup.string()
-            //   form.setFieldValue(name, "");
-            //   form.setFieldTouched(name, true, false); // kích hoạt hiển thị error
-            //   // onClear && onClear();
-            // }}
-            // onClear={() => {
-            //   form.setFieldValue(name, null); // để Yup bắt Required
-            //   form.setFieldTouched(name, true, false); // để show error luôn
-            // }}
-            placeholder={placeholder || "Choose select"}
-            id={name}
-            {...rest}
-            // 👇 nếu value === '' thì truyền undefined cho antd → hiện placeholder
-            value={field.value || undefined}
-            onChange={(value) => form.setFieldValue(name, value)} // cập nhật formik
-            onBlur={() => form.setFieldTouched(name, true)} // để Formik validate
-            style={{ width: "100%" }}
-            options={options.map((opt) => ({
-              label: opt.key,
-              value: opt.value,
-            }))}
-          />
-        )}
-      </FastField>
+      <Field name={name}>
+        {({ field, form, meta }) => (
+          <>
+            <Select
+              allowClear
+              placeholder={placeholder || "Choose select"}
+              id={name}
+              {...rest}
+              // "" => undefined để Antd hiện placeholder
+              value={field.value === "" ? undefined : field.value}
+              onChange={(value) => {
+                form.setFieldValue(name, value ?? ""); // khi clear bằng menu (không phải icon X)
+                form.setFieldTouched(name, true, false);
+              }}
+              onClear={() => {
+                form.setFieldValue(name, ""); // Yup thấy ""
+                form.setFieldTouched(name, true, false);
+                form.validateField(name); // ép validate ngay
+              }}
+              onBlur={() => form.setFieldTouched(name, true)}
+              style={{ width: "100%" }}
+              options={options.map((opt) => ({
+                label: opt.key,
+                value: opt.value,
+              }))}
+            />
 
-      {/* Hiển thị lỗi nếu có */}
-      <ErrorMessage name={name} component={TextErrors} />
+            {/* 🔥 Tự render lỗi luôn, bỏ ErrorMessage */}
+            {meta.touched && meta.error && (
+              <TextErrors>{meta.error}</TextErrors>
+            )}
+          </>
+        )}
+      </Field>
     </div>
   );
 };
